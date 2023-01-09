@@ -61,6 +61,5 @@ export default {
   props: {
     id: Number,
   },
-  data() {},
 };
 </script>

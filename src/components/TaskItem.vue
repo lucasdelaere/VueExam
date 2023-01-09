@@ -4,11 +4,12 @@
 
     <!-- invoerelement om tekst bij te voegen. De button plaatst een verwijder button bij. -->
     <div class="mb-3 input-group">
+      <!-- v-model kan niet gebruikt worden op props (deze inheriten namelijk van de parent (HomeView), gebruik in plaats daarvan een v-bind (:value) in combinatie met een v-on listener (@input) die de update emit naar de parent -->
       <input
         :value="task.name"
         type="text"
-        @change="updateName()"
         class="form-control"
+        @input="updateName($event.target.value)"
       />
       <button
         @click="deleteTask(task, index)"
@@ -25,7 +26,7 @@
       data-bs-toggle="modal"
       :data-bs-target="`#exampleModal${task.id}`"
     >
-      Add checklist
+      Checklist
     </button>
     <CheckListItem :id="task.id"> </CheckListItem>
   </div>
@@ -36,7 +37,6 @@ import CheckListItem from "@/components/CheckListItem";
 export default {
   name: "TaskItem",
   components: { CheckListItem },
-
   props: {
     task: Object,
     index: Number,
@@ -44,8 +44,8 @@ export default {
     columns: Array,
   },
   methods: {
-    updateName(taskName) {
-      this.$emit("updatename", this.index, this.taskIndex, taskName);
+    updateName(inputTaskName) {
+      this.$emit("updatename", this.index, this.taskIndex, inputTaskName);
     },
     deleteTask(task, index) {
       this.$emit("deletetask", task, index);

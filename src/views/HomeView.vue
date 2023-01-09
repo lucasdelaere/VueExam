@@ -1,11 +1,9 @@
 <template>
   <div class="container" id="Kanban">
-    <!--gegevenseigenschappen van de kolommen:een div wordt voor elke kolom weergeven. iedere kolom-div heeft een klasse 'column'en een binding op de index van de kolom in de array -->
     <div v-for="(column, index) in columns" :key="index" class="column">
       <div class="column-header">
         {{ column.name }}
       </div>
-      <!-- Dit element heeft gebeurtenislisteners voor de dragover- en drop-gebeurtenissen, die worden gebruikt om de drag-and-drop-functionaliteit voor de taken te implementeren. Wanneer een taak op dit element wordt neergezet, wordt de methode onDrop aangeroepen met de index van de kolom en de gebeurtenis drop als argumenten.  ($event = gebeurtenis) -->
       <div class="column-body overflow-auto">
         <!-- hier kun je nieuwe taken bijvoegen aan de hand van de knop toevoegen -->
         <div class="input-group mb-3">
@@ -22,8 +20,6 @@
             +
           </button>
         </div>
-        <!-- sleepgebied: die de taken in de kolom herhaalt en een div-element voor elke taak weergeeft. class taak staat gelijk aan de verbinding met de index van de taak in de takenreeks van de kolom.
-         De task div heeft ook een dragstart-gebeurtenislistener die de onDragStart-methode aanroept met het taakobject en de dragstart-gebeurtenis als argumenten. Dit wordt gebruikt om de gegevens in te stellen die worden overgedragen wanneer de taak wordt gesleept.-->
         <TaskItem
           v-for="(task, taskIndex) in column.tasks"
           :key="taskIndex"
@@ -37,6 +33,7 @@
           @dragover.prevent
           @drop="onDrop(index, taskIndex, $event)"
           @deletetask="deleteTask"
+          @updatename="updateName"
         />
         <div
           class="versleepZone mb-3"
@@ -57,9 +54,6 @@
 import TaskItem from "@/components/TaskItem";
 export default {
   components: { TaskItem },
-  props: {
-    task: Object,
-  },
   data() {
     return {
       id: 0,
@@ -82,7 +76,8 @@ export default {
   },
   methods: {
     //called from TaskItem
-    updatename(index, taskIndex, taskName) {
+    updateName(index, taskIndex, taskName) {
+      console.log(index, taskIndex, taskName);
       this.columns[index].tasks[taskIndex].name = taskName;
     },
     pushEnd(index, event) {
@@ -99,7 +94,7 @@ export default {
         name: task,
         id: taskId,
       });
-      console.log(taskId);
+      console.log(this.columns);
     },
     addTask(columnIndex, taskName, taskId) {
       this.columns[columnIndex].tasks.push({
@@ -131,14 +126,14 @@ export default {
         name: task,
         id: taskId,
       });
-      console.log(taskId);
+      console.log(this.columns);
     },
     deleteTask(task, columnIndex) {
-      console.log(columnIndex, task);
       const index = this.columns[columnIndex].tasks.indexOf(task);
       if (index > -1) {
         this.columns[columnIndex].tasks.splice(index, 1);
       }
+      console.log(this.columns);
     },
   },
 };
