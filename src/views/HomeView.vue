@@ -87,13 +87,12 @@ export default {
     },
     pushEnd(index, event) {
       event.preventDefault();
-      const task = JSON.parse(event.dataTransfer.getData("task")).name;
+      const taskObj = JSON.parse(event.dataTransfer.getData("task"));
+      const task = taskObj.name;
+      const taskId = taskObj.id;
+      const taken = taskObj.taken;
+      const takenChecked = taskObj.takenChecked;
       const columnId = parseInt(event.dataTransfer.getData("column"));
-      const taskId = JSON.parse(event.dataTransfer.getData("task")).id;
-      const taken = JSON.parse(event.dataTransfer.getData("task")).taken;
-      const takenChecked = JSON.parse(
-        event.dataTransfer.getData("task")
-      ).takenChecked;
       for (let [i, item] of this.columns[columnId].tasks.entries()) {
         if (item.id === taskId) {
           this.columns[columnId].tasks.splice(i, 1);
@@ -123,13 +122,12 @@ export default {
     onDrop(columnIndex, taskIndex, event) {
       //Index = column index to, taskIndex index to
       event.preventDefault();
-      const task = JSON.parse(event.dataTransfer.getData("task")).name;
+      const taskObj = JSON.parse(event.dataTransfer.getData("task"));
+      const task = taskObj.name;
+      const taskId = taskObj.id;
+      const taken = taskObj.taken;
+      const takenChecked = taskObj.takenChecked;
       const columnId = parseInt(event.dataTransfer.getData("column"));
-      const taskId = JSON.parse(event.dataTransfer.getData("task")).id;
-      const taken = JSON.parse(event.dataTransfer.getData("task")).taken;
-      const takenChecked = JSON.parse(
-        event.dataTransfer.getData("task")
-      ).takenChecked;
       for (let [i, item] of this.columns[columnId].tasks.entries()) {
         if (item.id === taskId) {
           this.columns[columnId].tasks.splice(i, 1);
