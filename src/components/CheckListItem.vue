@@ -11,7 +11,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" :id="`exampleModalLabel${id}`">
+          <h1 class="modal-title fs-5 text-dark" :id="`exampleModalLabel${id}`">
             checklist
           </h1>
           <button

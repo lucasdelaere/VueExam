@@ -1,9 +1,9 @@
 <template>
-  <div class="task">
+  <div class="task bg-light">
     <!-- De taak-div heeft ook het kenmerk versleepbaar, waardoor het geschikt is om te worden gesleept. -->
 
     <!-- invoerelement om tekst bij te voegen. De button plaatst een verwijder button bij. -->
-    <div class="mb-3 input-group">
+    <div class="input-group">
       <!-- v-model kan niet gebruikt worden op props (deze inheriten namelijk van de parent (HomeView), gebruik in plaats daarvan een v-bind (:value) in combinatie met een v-on listener (@input) die de update emit naar de parent -->
       <input
         :value="task.name"
@@ -13,7 +13,7 @@
       />
       <button
         @click="deleteTask(task, index)"
-        class="btn btn-outline-secondary"
+        class="btn btn-danger btn-outline-secondary text-white"
       >
         -
       </button>
@@ -22,11 +22,11 @@
     <!-- Button trigger modal -->
     <button
       type="button"
-      class="btn btn-primary"
+      class="btn btn-success"
       data-bs-toggle="modal"
       :data-bs-target="`#exampleModal${task.id}`"
     >
-      Checklist
+      Checklist ({{ task.takenChecked.filter((x) => x === true).length }}/2)
     </button>
     <CheckListItem
       :id="task.id"

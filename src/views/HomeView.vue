@@ -1,5 +1,5 @@
 <template>
-  <div class="container" id="Kanban">
+  <div class="container d-flex gap-3" id="Kanban">
     <div v-for="(column, index) in columns" :key="index" class="column">
       <div class="column-header">
         {{ column.name }}
@@ -15,7 +15,7 @@
           />
           <button
             @click="addTask(index, newTaskNames[index], id)"
-            class="btn btn-outline-secondary"
+            class="btn btn-primary btn-outline-secondary text-white"
           >
             +
           </button>
@@ -154,10 +154,6 @@ export default {
 </script>
 
 <style>
-.container {
-  display: flex;
-}
-
 .column {
   flex: 1;
 }
@@ -169,6 +165,7 @@ export default {
 }
 
 .column-body {
+  background: #f2f2f2;
   min-height: 100px;
   max-height: 85vh;
   border: 2px solid #ccc;
@@ -178,7 +175,7 @@ export default {
   color: #ccc;
 }
 #Kanban {
-  margin-top: 20px;
+  padding-top: 20px;
   height: 95vh;
 }
 
@@ -189,5 +186,6 @@ export default {
 #footer {
   width: 100%;
   bottom: 0;
+  color: white;
 }
 </style>
