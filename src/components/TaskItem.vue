@@ -28,7 +28,13 @@
     >
       Checklist
     </button>
-    <CheckListItem :id="task.id"> </CheckListItem>
+    <CheckListItem
+      :id="task.id"
+      :taken="task.taken"
+      :takenChecked="task.takenChecked"
+      @updatechecklist="updateChecklist"
+    >
+    </CheckListItem>
   </div>
 </template>
 
@@ -38,7 +44,7 @@ export default {
   name: "TaskItem",
   components: { CheckListItem },
   props: {
-    task: Object,
+    task: Object, //contains name, id, takenChecked & taken
     index: Number,
     taskIndex: Number,
     columns: Array,
@@ -49,6 +55,17 @@ export default {
     },
     deleteTask(task, index) {
       this.$emit("deletetask", task, index);
+    },
+    updateChecklist(arr, pos, value) {
+      //array to update, position in that array to update and value to update it with
+      this.$emit(
+        "updatechecklisthome",
+        this.index,
+        this.taskIndex,
+        arr,
+        pos,
+        value
+      );
     },
   },
 };

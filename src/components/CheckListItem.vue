@@ -1,4 +1,5 @@
 <template>
+  <!-- CheckListItem zien behandelen we als een child van TaskItem (die op zijn beurt een child is van HomeView -->
   <!-- Modal -->
   <div
     class="modal fade"
@@ -27,9 +28,16 @@
               type="checkbox"
               value=""
               :id="`taak1_${id}`"
-              checked
+              :checked="takenChecked[0]"
+              @change="updateChecklist('takenChecked', 0, !takenChecked[0])"
             />
-            <input type="text" value="taak1" />
+            <!--of !$event.target.checked -->
+            <input
+              type="text"
+              :value="taken[0]"
+              class="form-control"
+              @change="updateChecklist('taken', 0, $event.target.value)"
+            />
           </div>
           <div class="form-check">
             <input
@@ -37,8 +45,15 @@
               type="checkbox"
               value=""
               :id="`taak2_${id}`"
+              :checked="takenChecked[1]"
+              @change="updateChecklist('takenChecked', 1, !takenChecked[1])"
             />
-            <input type="text" value="taak2" />
+            <input
+              type="text"
+              :value="taken[1]"
+              class="form-control"
+              @change="updateChecklist('taken', 1, $event.target.value)"
+            />
           </div>
         </div>
         <div class="modal-footer">
@@ -59,7 +74,15 @@
 export default {
   name: "CheckListItem",
   props: {
-    id: Number,
+    id: Number, //unique id for each task and corresponding modal
+    taken: Array,
+    takenChecked: Array,
+  },
+  methods: {
+    updateChecklist(arr, pos, value) {
+      //array to update, position in that array to update and value to update it with
+      this.$emit("updatechecklist", arr, pos, value);
+    },
   },
 };
 </script>

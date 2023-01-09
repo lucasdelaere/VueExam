@@ -27,13 +27,14 @@
           :index="index"
           :taskIndex="taskIndex"
           :columns="columns"
-          @dragstart="onDragStart(task, $event, index, task.id)"
+          @dragstart="onDragStart(task, $event, index)"
           draggable="true"
           ref="dragArea"
           @dragover.prevent
           @drop="onDrop(index, taskIndex, $event)"
           @deletetask="deleteTask"
           @updatename="updateName"
+          @updatechecklisthome="updateChecklist"
         />
         <div
           class="versleepZone mb-3"
@@ -77,14 +78,22 @@ export default {
   methods: {
     //called from TaskItem
     updateName(index, taskIndex, taskName) {
-      console.log(index, taskIndex, taskName);
       this.columns[index].tasks[taskIndex].name = taskName;
+    },
+    //called from TaskItem
+    updateChecklist(index, taskIndex, arr, pos, value) {
+      //array to update, position in that array to update and value to update it with
+      this.columns[index].tasks[taskIndex][arr][pos] = value;
     },
     pushEnd(index, event) {
       event.preventDefault();
-      const task = JSON.parse(event.dataTransfer.getData("text")).name;
+      const task = JSON.parse(event.dataTransfer.getData("task")).name;
       const columnId = parseInt(event.dataTransfer.getData("column"));
-      const taskId = parseInt(event.dataTransfer.getData("id"));
+      const taskId = JSON.parse(event.dataTransfer.getData("task")).id;
+      const taken = JSON.parse(event.dataTransfer.getData("task")).taken;
+      const takenChecked = JSON.parse(
+        event.dataTransfer.getData("task")
+      ).takenChecked;
       for (let [i, item] of this.columns[columnId].tasks.entries()) {
         if (item.id === taskId) {
           this.columns[columnId].tasks.splice(i, 1);
@@ -93,29 +102,34 @@ export default {
       this.columns[index].tasks.push({
         name: task,
         id: taskId,
+        taken: taken,
+        takenChecked: takenChecked,
       });
-      console.log(this.columns);
     },
     addTask(columnIndex, taskName, taskId) {
       this.columns[columnIndex].tasks.push({
         name: taskName,
         id: taskId,
+        takenChecked: [false, false], //shows whether a task is done or not
+        taken: ["", ""], //name of task
       });
       this.newTaskNames[columnIndex] = "";
       this.id += 1;
     },
-    onDragStart(task, event, columnIndexFrom, taskId) {
-      event.dataTransfer.setData("text", JSON.stringify(task));
+    onDragStart(task, event, columnIndexFrom) {
+      event.dataTransfer.setData("task", JSON.stringify(task));
       event.dataTransfer.setData("column", columnIndexFrom);
-      event.dataTransfer.setData("id", taskId);
     },
     onDrop(columnIndex, taskIndex, event) {
       //Index = column index to, taskIndex index to
       event.preventDefault();
-      const task = JSON.parse(event.dataTransfer.getData("text")).name;
-      const columnId = parseInt(event.dataTransfer.getData("column")); //columnId from
-      const taskId = parseInt(event.dataTransfer.getData("id")); //taskId
-      //delete task in old column
+      const task = JSON.parse(event.dataTransfer.getData("task")).name;
+      const columnId = parseInt(event.dataTransfer.getData("column"));
+      const taskId = JSON.parse(event.dataTransfer.getData("task")).id;
+      const taken = JSON.parse(event.dataTransfer.getData("task")).taken;
+      const takenChecked = JSON.parse(
+        event.dataTransfer.getData("task")
+      ).takenChecked;
       for (let [i, item] of this.columns[columnId].tasks.entries()) {
         if (item.id === taskId) {
           this.columns[columnId].tasks.splice(i, 1);
@@ -125,15 +139,15 @@ export default {
       this.columns[columnIndex].tasks.splice(taskIndex + 1, 0, {
         name: task,
         id: taskId,
+        taken: taken,
+        takenChecked: takenChecked,
       });
-      console.log(this.columns);
     },
     deleteTask(task, columnIndex) {
       const index = this.columns[columnIndex].tasks.indexOf(task);
       if (index > -1) {
         this.columns[columnIndex].tasks.splice(index, 1);
       }
-      console.log(this.columns);
     },
   },
 };
