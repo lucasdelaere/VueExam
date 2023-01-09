@@ -12,7 +12,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5 text-dark" :id="`exampleModalLabel${id}`">
-            checklist
+            {{ name }} - checklist
           </h1>
           <button
             type="button"
@@ -75,6 +75,7 @@ export default {
   name: "CheckListItem",
   props: {
     id: Number, //unique id for each task and corresponding modal
+    name: String,
     taken: Array,
     takenChecked: Array,
   },

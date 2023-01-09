@@ -30,6 +30,7 @@
     </button>
     <CheckListItem
       :id="task.id"
+      :name="task.name"
       :taken="task.taken"
       :takenChecked="task.takenChecked"
       @updatechecklist="updateChecklist"
