@@ -34,7 +34,7 @@
           draggable="true"
           ref="dragArea"
           @dragover.prevent
-          @drop="onDrop(index, taskIndex, $event)"
+          @drop="onDrop(index, $event, taskIndex)"
           @deletetask="deleteTask"
           @updatename="updateName"
           @updatechecklisthome="updateChecklist"
@@ -45,7 +45,7 @@
           draggable="false"
           ref="dragArea"
           @dragover.prevent
-          @drop="pushEnd(index, $event)"
+          @drop="onDrop(index, $event)"
         >
           Drag here to add to bottom
         </div>
@@ -61,6 +61,7 @@ export default {
   components: { TaskItem },
   data() {
     return {
+      // task id
       id: 0,
       //tasks per column
       columns: [
@@ -82,31 +83,13 @@ export default {
     };
   },
   methods: {
+    // temporarily save task data when it's being dragged
     onDragStart(task, event, columnIndexFrom) {
       event.dataTransfer.setData("task", JSON.stringify(task));
       event.dataTransfer.setData("column", columnIndexFrom);
     },
-    pushEnd(index, event) {
-      event.preventDefault();
-      const taskObj = JSON.parse(event.dataTransfer.getData("task"));
-      const task = taskObj.name;
-      const taskId = taskObj.id;
-      const taken = taskObj.taken;
-      const takenChecked = taskObj.takenChecked;
-      const columnId = parseInt(event.dataTransfer.getData("column"));
-      for (let [i, item] of this.columns[columnId].tasks.entries()) {
-        if (item.id === taskId) {
-          this.columns[columnId].tasks.splice(i, 1);
-        }
-      }
-      this.columns[index].tasks.push({
-        name: task,
-        id: taskId,
-        taken: taken,
-        takenChecked: takenChecked,
-      });
-    },
-    onDrop(columnIndex, taskIndex, event) {
+    // called when a task is dropped in a new place. Get task data and change column data accordingly
+    onDrop(index, event, taskIndex = undefined) {
       //Index = column index to, taskIndex index to
       event.preventDefault();
       const taskObj = JSON.parse(event.dataTransfer.getData("task"));
@@ -115,19 +98,33 @@ export default {
       const taken = taskObj.taken;
       const takenChecked = taskObj.takenChecked;
       const columnId = parseInt(event.dataTransfer.getData("column"));
+      // delete task where it came from
       for (let [i, item] of this.columns[columnId].tasks.entries()) {
         if (item.id === taskId) {
           this.columns[columnId].tasks.splice(i, 1);
         }
       }
-      //insert task in new column
-      this.columns[columnIndex].tasks.splice(taskIndex + 1, 0, {
-        name: task,
-        id: taskId,
-        taken: taken,
-        takenChecked: takenChecked,
-      });
+      // add task 1 above specified index in column
+      if (taskIndex !== undefined) {
+        //insert task in new column
+        this.columns[index].tasks.splice(taskIndex + 1, 0, {
+          name: task,
+          id: taskId,
+          taken: taken,
+          takenChecked: takenChecked,
+        });
+        // add task to end of column
+      } else {
+        //insert task at end of column
+        this.columns[index].tasks.push({
+          name: task,
+          id: taskId,
+          taken: taken,
+          takenChecked: takenChecked,
+        });
+      }
     },
+    // add a new task
     addTask(columnIndex, taskName, taskId) {
       this.columns[columnIndex].tasks.push({
         name: taskName,
@@ -138,6 +135,7 @@ export default {
       this.newTaskNames[columnIndex] = "";
       this.id += 1;
     },
+    // delete a task (called from TaskItem)
     deleteTask(task, columnIndex) {
       const index = this.columns[columnIndex].tasks.indexOf(task);
       if (index > -1) {
