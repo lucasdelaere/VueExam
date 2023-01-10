@@ -1,11 +1,12 @@
 <template>
   <div class="container d-flex gap-3" id="Kanban">
+    <!-- loop over the different columns (Backlog, To Do, Done) -->
     <div v-for="(column, index) in columns" :key="index" class="column">
       <div class="column-header">
         {{ column.name }}
       </div>
       <div class="column-body overflow-auto">
-        <!-- hier kun je nieuwe taken bijvoegen aan de hand van de knop toevoegen -->
+        <!-- here you can add tasks to a column -->
         <div class="input-group mb-3">
           <input
             v-model="newTaskNames[index]"
@@ -20,6 +21,8 @@
             +
           </button>
         </div>
+        <!-- TaskItem represents one task in a column, so we loop (v-for) over all tasks per column -->
+        <!-- We used the HTML5 drag & drop events, but one could also use a drag API such as https://github.com/SortableJS/Vue.Draggable -->
         <TaskItem
           v-for="(task, taskIndex) in column.tasks"
           :key="taskIndex"
@@ -36,14 +39,15 @@
           @updatename="updateName"
           @updatechecklisthome="updateChecklist"
         />
+        <!-- dragging a task to this div will add it to the bottom of the column -->
         <div
-          class="versleepZone mb-3"
+          class="dragBottom mb-3"
           draggable="false"
           ref="dragArea"
           @dragover.prevent
           @drop="pushEnd(index, $event)"
         >
-          Add task to bottom
+          Drag here to add to bottom
         </div>
       </div>
     </div>
@@ -58,6 +62,7 @@ export default {
   data() {
     return {
       id: 0,
+      //tasks per column
       columns: [
         {
           name: "Backlog",
@@ -72,18 +77,14 @@ export default {
           tasks: [],
         },
       ],
+      // names in the 'Name a task' input field
       newTaskNames: ["", "", ""],
     };
   },
   methods: {
-    //called from TaskItem
-    updateName(index, taskIndex, taskName) {
-      this.columns[index].tasks[taskIndex].name = taskName;
-    },
-    //called from TaskItem
-    updateChecklist(index, taskIndex, arr, pos, value) {
-      //array to update, position in that array to update and value to update it with
-      this.columns[index].tasks[taskIndex][arr][pos] = value;
+    onDragStart(task, event, columnIndexFrom) {
+      event.dataTransfer.setData("task", JSON.stringify(task));
+      event.dataTransfer.setData("column", columnIndexFrom);
     },
     pushEnd(index, event) {
       event.preventDefault();
@@ -104,20 +105,6 @@ export default {
         taken: taken,
         takenChecked: takenChecked,
       });
-    },
-    addTask(columnIndex, taskName, taskId) {
-      this.columns[columnIndex].tasks.push({
-        name: taskName,
-        id: taskId,
-        takenChecked: [false, false], //shows whether a task is done or not
-        taken: ["", ""], //name of task
-      });
-      this.newTaskNames[columnIndex] = "";
-      this.id += 1;
-    },
-    onDragStart(task, event, columnIndexFrom) {
-      event.dataTransfer.setData("task", JSON.stringify(task));
-      event.dataTransfer.setData("column", columnIndexFrom);
     },
     onDrop(columnIndex, taskIndex, event) {
       //Index = column index to, taskIndex index to
@@ -141,11 +128,30 @@ export default {
         takenChecked: takenChecked,
       });
     },
+    addTask(columnIndex, taskName, taskId) {
+      this.columns[columnIndex].tasks.push({
+        name: taskName,
+        id: taskId,
+        takenChecked: [false, false], //shows whether a task is done or not
+        taken: ["", ""], //name of task
+      });
+      this.newTaskNames[columnIndex] = "";
+      this.id += 1;
+    },
     deleteTask(task, columnIndex) {
       const index = this.columns[columnIndex].tasks.indexOf(task);
       if (index > -1) {
         this.columns[columnIndex].tasks.splice(index, 1);
       }
+    },
+    //called from TaskItem
+    updateName(index, taskIndex, taskName) {
+      this.columns[index].tasks[taskIndex].name = taskName;
+    },
+    //called from TaskItem
+    updateChecklist(index, taskIndex, arr, pos, value) {
+      //array to update, position in that array to update and value to update it with
+      this.columns[index].tasks[taskIndex][arr][pos] = value;
     },
   },
 };
@@ -177,7 +183,8 @@ export default {
   height: 95vh;
 }
 
-.versleepZone {
+.dragBottom {
+  font-size: 12px;
   color: black;
   background-color: skyblue;
 }

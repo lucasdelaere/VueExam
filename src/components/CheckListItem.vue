@@ -1,5 +1,5 @@
 <template>
-  <!-- CheckListItem zien behandelen we als een child van TaskItem (die op zijn beurt een child is van HomeView -->
+  <!-- We treat CheckListItem as a child of TaskItem and TaskItem as a child of HomeView -->
   <!-- Modal -->
   <div
     class="modal fade"
@@ -75,11 +75,12 @@ export default {
   name: "CheckListItem",
   props: {
     id: Number, //unique id for each task and corresponding modal
-    name: String,
-    taken: Array,
-    takenChecked: Array,
+    name: String, // task name
+    taken: Array, // array with names of subtasks
+    takenChecked: Array, // array with two true/false values, determining whether a subtask is done or not
   },
   methods: {
+    //emit 'updatechecklist' event to parent (TaskItem) with new array, position and value to be updated
     updateChecklist(arr, pos, value) {
       //array to update, position in that array to update and value to update it with
       this.$emit("updatechecklist", arr, pos, value);

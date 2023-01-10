@@ -1,10 +1,7 @@
 <template>
   <div class="task bg-light">
-    <!-- De taak-div heeft ook het kenmerk versleepbaar, waardoor het geschikt is om te worden gesleept. -->
-
-    <!-- invoerelement om tekst bij te voegen. De button plaatst een verwijder button bij. -->
     <div class="input-group">
-      <!-- v-model kan niet gebruikt worden op props (deze inheriten namelijk van de parent (HomeView), gebruik in plaats daarvan een v-bind (:value) in combinatie met een v-on listener (@input) die de update emit naar de parent -->
+      <!-- v-model should not be used on props (these inherit from the parent (HomeView)). Instead, use a v-bind (:value) in combination with a v-on listener (@input) which emits the update to the parent -->
       <input
         :value="task.name"
         type="text"
@@ -19,15 +16,17 @@
       </button>
     </div>
 
-    <!-- Button trigger modal -->
+    <!-- Button trigger checklist modal (CheckListItem) -->
     <button
       type="button"
       class="btn btn-success"
       data-bs-toggle="modal"
       :data-bs-target="`#exampleModal${task.id}`"
     >
+      <!-- show the amount of checked items -->
       Checklist ({{ task.takenChecked.filter((x) => x === true).length }}/2)
     </button>
+    <!-- checklist modal -->
     <CheckListItem
       :id="task.id"
       :name="task.name"
@@ -45,18 +44,21 @@ export default {
   name: "TaskItem",
   components: { CheckListItem },
   props: {
-    task: Object, //contains name, id, takenChecked & taken
-    index: Number,
-    taskIndex: Number,
+    task: Object, // contains name, id, takenChecked & taken
+    index: Number, // index of column
+    taskIndex: Number, // index of current task
     columns: Array,
   },
   methods: {
+    //emit 'updatename' event to parent with new name, column index and taskIndex
     updateName(inputTaskName) {
       this.$emit("updatename", this.index, this.taskIndex, inputTaskName);
     },
+    //emit 'deletetask' event to parent with the task and column index
     deleteTask(task, index) {
       this.$emit("deletetask", task, index);
     },
+    //emit 'updatechecklisthome' event to parent with array, position and value to update, column index and task index
     updateChecklist(arr, pos, value) {
       //array to update, position in that array to update and value to update it with
       this.$emit(
